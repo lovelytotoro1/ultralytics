@@ -35,7 +35,7 @@ try:
                 for im_name in os.listdir(cls_p):
                     im_p = osp.join(cls_p, im_name)
                     img = Image.open(im_p)
-                    # 测试提交更改ssss
+                    # 测试提交更改ssss last
                     res = model.predict(img, imgsz=640)
                     if res[0].probs.top1 != int(cls) or res[0].probs.top1conf.item() <= 0.9:
                         log_info = f"im_name:{im_name:<20}\tclass:{int(cls):<5}\t pred:{res[0].probs.top1:<5}\tprobs:{res[0].probs.top1conf.item()}\n"
