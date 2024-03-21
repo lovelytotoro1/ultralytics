@@ -79,7 +79,10 @@ def convert_coco(labels_dir='../coco/annotations/',
         p.mkdir(parents=True, exist_ok=True)  # make dir
 
     # Convert classes
-    coco80 = coco91_to_coco80_class()
+    if cls91to80:
+        coco80 = coco91_to_coco80_class()
+    else:
+        coco80 = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
 
     # Import json
     for json_file in sorted(Path(labels_dir).resolve().glob('*.json')):
@@ -114,7 +117,7 @@ def convert_coco(labels_dir='../coco/annotations/',
                 if box[2] <= 0 or box[3] <= 0:  # if w <= 0 and h <= 0
                     continue
 
-                cls = coco80[ann['category_id'] - 1] if cls91to80 else ann['category_id'] - 1  # class
+                cls = ann['category_id']  # class
                 box = [cls] + box.tolist()
                 if box not in bboxes:
                     bboxes.append(box)

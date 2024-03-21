@@ -523,6 +523,11 @@ class v8ClassificationLoss:
 
     def __call__(self, preds, batch):
         """Compute the classification loss between predictions and true labels."""
-        loss = torch.nn.functional.cross_entropy(preds, batch['cls'], reduction='mean')
+        # 使用 BSE 损失
+        target = torch.nn.functional.one_hot(batch['cls'], num_classes=preds.shape[1]).float()
+        loss = torch.nn.functional.binary_cross_entropy(preds, target, reduction='mean')
+
+        # 使用 交叉熵 损失
+        # loss = torch.nn.functional.cross_entropy(preds, batch['cls'], reduction='mean')
         loss_items = loss.detach()
         return loss, loss_items

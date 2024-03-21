@@ -39,7 +39,7 @@ class BaseValidator:
     BaseValidator.
 
     A base class for creating validators.
-
+    
     Attributes:
         args (SimpleNamespace): Configuration for the validator.
         dataloader (DataLoader): Dataloader to use for validation.
@@ -66,7 +66,6 @@ class BaseValidator:
     def __init__(self, dataloader=None, save_dir=None, pbar=None, args=None, _callbacks=None):
         """
         Initializes a BaseValidator instance.
-
         Args:
             dataloader (torch.utils.data.DataLoader): Dataloader to be used for validation.
             save_dir (Path, optional): Directory to save results.

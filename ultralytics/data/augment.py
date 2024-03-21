@@ -986,7 +986,7 @@ def classify_transforms(size=224, rect=False, mean=(0.0, 0.0, 0.0), std=(1.0, 1.
     """Transforms to apply if albumentations not installed."""
     if not isinstance(size, int):
         raise TypeError(f'classify_transforms() size {size} must be integer, not (list, tuple)')
-    transforms = [ClassifyLetterBox(size, auto=True) if rect else CenterCrop(size), ToTensor()]
+    transforms = [ClassifyLetterBox(size, auto=False) if rect else CenterCrop(size), ToTensor()]
     if any(mean) or any(std):
         transforms.append(T.Normalize(mean, std, inplace=True))
     return T.Compose(transforms)
@@ -1078,7 +1078,7 @@ class ClassifyLetterBox:
             (numpy.ndarray): The letterboxed and resized image as a numpy array.
         """
         imh, imw = im.shape[:2]
-        r = min(self.h / imh, self.w / imw)  # ratio of new/old dimensions
+        r = max(self.h / imh, self.w / imw)  # ratio of new/old dimensions
         h, w = round(imh * r), round(imw * r)  # resized image dimensions
 
         # Calculate padding dimensions

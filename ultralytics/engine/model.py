@@ -74,18 +74,6 @@ class Model(nn.Module):
         self.task = task  # task type
         model = str(model).strip()  # strip spaces
 
-        # Check if Ultralytics HUB model from https://hub.ultralytics.com
-        if self.is_hub_model(model):
-            from ultralytics.hub.session import HUBTrainingSession
-            self.session = HUBTrainingSession(model)
-            model = self.session.model_file
-
-        # Check if Triton Server model
-        elif self.is_triton_model(model):
-            self.model = model
-            self.task = task
-            return
-
         # Load or create new YOLO model
         model = checks.check_model_file_from_stem(model)  # add suffix, i.e. yolov8n -> yolov8n.pt
         if Path(model).suffix in ('.yaml', '.yml'):
@@ -96,21 +84,6 @@ class Model(nn.Module):
     def __call__(self, source=None, stream=False, **kwargs):
         """Calls the 'predict' function with given arguments to perform object detection."""
         return self.predict(source, stream, **kwargs)
-
-    @staticmethod
-    def is_triton_model(model):
-        """Is model a Triton Server URL string, i.e. <scheme>://<netloc>/<endpoint>/<task_name>"""
-        from urllib.parse import urlsplit
-        url = urlsplit(model)
-        return url.netloc and url.path and url.scheme in {'http', 'grpc'}
-
-    @staticmethod
-    def is_hub_model(model):
-        """Check if the provided model is a HUB model."""
-        return any((
-            model.startswith(f'{HUB_WEB_ROOT}/models/'),  # i.e. https://hub.ultralytics.com/models/MODEL_ID
-            [len(x) for x in model.split('_')] == [42, 20],  # APIKEY_MODELID
-            len(model) == 20 and not Path(model).exists() and all(x not in model for x in './\\')))  # MODELID
 
     def _new(self, cfg: str, task=None, model=None, verbose=True):
         """
@@ -266,7 +239,7 @@ class Model(nn.Module):
             validator (BaseValidator): Customized validator.
             **kwargs : Any other args accepted by the validators. To see all args check 'configuration' section in docs
         """
-        custom = {'rect': True}  # method defaults
+        custom = {'rect': False}  # method defaults
         args = {**self.overrides, **custom, **kwargs, 'mode': 'val'}  # highest priority args on the right
 
         validator = (validator or self._smart_load('validator'))(args=args, _callbacks=self.callbacks)
@@ -318,10 +291,6 @@ class Model(nn.Module):
             **kwargs (Any): Any number of arguments representing the training configuration.
         """
         self._check_is_pytorch_model()
-        if self.session:  # Ultralytics HUB session
-            if any(kwargs):
-                LOGGER.warning('WARNING ⚠️ using HUB training arguments, ignoring local training arguments.')
-            kwargs = self.session.train_args
         checks.check_pip_update_available()
 
         overrides = yaml_load(checks.check_yaml(kwargs['cfg'])) if kwargs.get('cfg') else self.overrides
@@ -329,7 +298,7 @@ class Model(nn.Module):
         args = {**overrides, **custom, **kwargs, 'mode': 'train'}  # highest priority args on the right
         if args.get('resume'):
             args['resume'] = self.ckpt_path
-
+        # 训练器
         self.trainer = (trainer or self._smart_load('trainer'))(overrides=args, _callbacks=self.callbacks)
         if not args.get('resume'):  # manually set model only if not resuming
             self.trainer.model = self.trainer.get_model(weights=self.model if self.ckpt else None, cfg=self.model.yaml)

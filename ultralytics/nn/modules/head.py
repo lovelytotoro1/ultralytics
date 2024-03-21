@@ -166,7 +166,8 @@ class Classify(nn.Module):
         if isinstance(x, list):
             x = torch.cat(x, 1)
         x = self.linear(self.drop(self.pool(self.conv(x)).flatten(1)))
-        return x if self.training else x.softmax(1)
+        return x if self.training else x.sigmoid()
+        # return x if self.training else x.softmax(1)
 
 
 class RTDETRDecoder(nn.Module):
@@ -295,7 +296,7 @@ class RTDETRDecoder(nn.Module):
         return y if self.export else (y, x)
 
     def _generate_anchors(self, shapes, grid_size=0.05, dtype=torch.float32, device='cpu', eps=1e-2):
-        """Generates anchor bounding boxes for given shapes with specific grid size and validates them."""
+        """ Generates anchor bounding boxes for given shapes with specific grid size and validates them. """
         anchors = []
         for i, (h, w) in enumerate(shapes):
             sy = torch.arange(end=h, dtype=dtype, device=device)

@@ -206,7 +206,9 @@ class ClassificationDataset(torchvision.datasets.ImageFolder):
         torch_transforms (callable): torchvision transforms applied to the dataset.
         album_transforms (callable, optional): Albumentations transforms applied to the dataset if augment is True.
     """
-
+    # def build_dataset(self, img_path, mode='train', batch=None):
+    #     """Creates a ClassificationDataset instance given an image path, and mode (train/test etc.)."""
+    #     return ClassificationDataset(root=img_path, args=self.args, augment=mode == 'train', prefix=mode)
     def __init__(self, root, args, augment=False, cache=False, prefix=''):
         """
         Initialize YOLO object with root, image size, augmentations, and cache settings.
