@@ -555,10 +555,14 @@ def torch_safe_load(weight):
     Returns:
         (dict): The loaded PyTorch model.
     """
-    from ultralytics.utils.downloads import attempt_download_asset
+    # from ultralytics.utils.downloads import attempt_download_asset
 
     check_suffix(file=weight, suffix='.pt')
-    file = attempt_download_asset(weight)  # search online if missing locally
+
+    file = Path(str(weight).strip().replace("'", ''))
+    if not file.exists():
+        raise TypeError(f'Error!!! can not find the pretrained model file \'{file}\'!!!')
+    
     try:
         with temporary_modules({
                 'ultralytics.yolo.utils': 'ultralytics.utils',
@@ -630,7 +634,7 @@ def attempt_load_one_weight(weight, device=None, inplace=True, fuse=False):
     model = (ckpt.get('ema') or ckpt['model']).to(device).float()  # FP32 model
 
     # Model compatibility updates
-    model.args = {k: v for k, v in args.items() if k in DEFAULT_CFG_KEYS}  # attach args to model
+    model.args = {k: v for k, v in args.items()}  # attach args to model
     model.pt_path = weight  # attach *.pt file path to model
     model.task = guess_model_task(model)
     if not hasattr(model, 'stride'):

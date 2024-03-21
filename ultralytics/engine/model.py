@@ -74,8 +74,8 @@ class Model(nn.Module):
         self.task = task  # task type
         model = str(model).strip()  # strip spaces
 
-        # Load or create new YOLO model
-        model = checks.check_model_file_from_stem(model)  # add suffix, i.e. yolov8n -> yolov8n.pt
+        # 不要求考虑从网络上进行代码下载
+        # model = checks.check_model_file_from_stem(model)  # add suffix, i.e. yolov8n -> yolov8n.pt
         if Path(model).suffix in ('.yaml', '.yml'):
             self._new(model, task)
         else:
@@ -190,8 +190,8 @@ class Model(nn.Module):
             (List[ultralytics.engine.results.Results]): The prediction results.
         """
         if source is None:
-            source = ASSETS
             LOGGER.warning(f"WARNING ⚠️ 'source' is missing. Using 'source={source}'.")
+            raise TypeError(f"the 'source' is missing")
 
         is_cli = (sys.argv[0].endswith('yolo') or sys.argv[0].endswith('ultralytics')) and any(
             x in sys.argv for x in ('predict', 'track', 'mode=predict', 'mode=track'))

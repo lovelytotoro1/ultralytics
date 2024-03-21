@@ -16,7 +16,7 @@ from PIL import Image
 
 from ultralytics.utils import ARM64, LINUX, LOGGER, ROOT, yaml_load
 from ultralytics.utils.checks import check_requirements, check_suffix, check_version, check_yaml
-from ultralytics.utils.downloads import attempt_download_asset, is_url
+from ultralytics.utils.downloads import is_url
 
 
 def check_class_names(names):
@@ -112,10 +112,6 @@ class AutoBackend(nn.Module):
         if cuda and not any([nn_module, pt, jit, engine, onnx]):  # GPU dataloader formats
             device = torch.device('cpu')
             cuda = False
-
-        # Download if not local
-        if not (pt or triton or nn_module):
-            w = attempt_download_asset(w)
 
         # Load model
         if nn_module:  # in-memory PyTorch model

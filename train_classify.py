@@ -28,7 +28,7 @@ try:
         save_name = "test_BCELoss_0318_1357"
         save_root = "classify"
         data_root = "/media/libinWorkSpace/YZK_FuBu/cls_dataset/val"
-        model = YOLO(os.path.join(save_root, model_name,'weights','best.pt'))  # load an official model
+        model = YOLO(os.path.join(save_root, model_name,'weights','best.pt')).cuda()  # load an official model
         with open(os.path.join(save_root, model_name, "test_image_info.txt"), "w+") as f:
             for cls in os.listdir(data_root):  # 所有的数据种类
                 cls_p = os.path.join(data_root, cls)
