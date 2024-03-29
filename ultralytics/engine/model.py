@@ -291,11 +291,11 @@ class Model(nn.Module):
             **kwargs (Any): Any number of arguments representing the training configuration.
         """
         self._check_is_pytorch_model()
-        checks.check_pip_update_available()
+        # checks.check_pip_update_available()
 
         overrides = yaml_load(checks.check_yaml(kwargs['cfg'])) if kwargs.get('cfg') else self.overrides
-        custom = {'data': DEFAULT_CFG_DICT['data'] or TASK2DATA[self.task]}  # method defaults
-        args = {**overrides, **custom, **kwargs, 'mode': 'train'}  # highest priority args on the right
+        # custom = {'data': DEFAULT_CFG_DICT['data'] or TASK2DATA[self.task]} # method defaults
+        args = {**overrides, **kwargs, 'mode': 'train'}  # highest priority args on the right
         if args.get('resume'):
             args['resume'] = self.ckpt_path
         # 训练器
@@ -303,6 +303,7 @@ class Model(nn.Module):
         if not args.get('resume'):  # manually set model only if not resuming
             self.trainer.model = self.trainer.get_model(weights=self.model if self.ckpt else None, cfg=self.model.yaml)
             self.model = self.trainer.model
+        
         self.trainer.hub_session = self.session  # attach optional HUB session
         self.trainer.train()
         # Update model and cfg after training

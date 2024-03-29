@@ -348,21 +348,21 @@ def check_cls_dataset(dataset, split=''):
     """
 
     # Download (optional if dataset=https://file.zip is passed directly)
-    if str(dataset).startswith(('http:/', 'https:/')):
-        dataset = safe_download(dataset, dir=DATASETS_DIR, unzip=True, delete=False)
+    # if str(dataset).startswith(('http:/', 'https:/')):
+    #     dataset = safe_download(dataset, dir=DATASETS_DIR, unzip=True, delete=False)
 
     dataset = Path(dataset)
     data_dir = (dataset if dataset.is_dir() else (DATASETS_DIR / dataset)).resolve()
-    if not data_dir.is_dir():
-        LOGGER.warning(f'\nDataset not found ⚠️, missing path {data_dir}, attempting download...')
-        t = time.time()
-        if str(dataset) == 'imagenet':
-            subprocess.run(f"bash {ROOT / 'data/scripts/get_imagenet.sh'}", shell=True, check=True)
-        else:
-            url = f'https://github.com/ultralytics/yolov5/releases/download/v1.0/{dataset}.zip'
-            download(url, dir=data_dir.parent)
-        s = f"Dataset download success ✅ ({time.time() - t:.1f}s), saved to {colorstr('bold', data_dir)}\n"
-        LOGGER.info(s)
+    # if not data_dir.is_dir():
+    #     LOGGER.warning(f'\nDataset not found ⚠️, missing path {data_dir}, attempting download...')
+    #     t = time.time()
+    #     if str(dataset) == 'imagenet':
+    #         subprocess.run(f"bash {ROOT / 'data/scripts/get_imagenet.sh'}", shell=True, check=True)
+    #     else:
+    #         url = f'https://github.com/ultralytics/yolov5/releases/download/v1.0/{dataset}.zip'
+    #         download(url, dir=data_dir.parent)
+    #     s = f"Dataset download success ✅ ({time.time() - t:.1f}s), saved to {colorstr('bold', data_dir)}\n"
+    #     LOGGER.info(s)
     train_set = data_dir / 'train'
     val_set = data_dir / 'val' if (data_dir / 'val').exists() else data_dir / 'validation' if \
         (data_dir / 'validation').exists() else None  # data/test or data/val

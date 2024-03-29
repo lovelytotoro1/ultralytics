@@ -97,7 +97,7 @@ def is_ascii(s) -> bool:
     return all(ord(c) < 128 for c in s)
 
 
-def check_imgsz(imgsz, stride=32, min_dim=1, max_dim=2, floor=0):
+def check_imgsz(imgsz, stride=32, min_dim=1, max_dim=3, floor=0):
     """
     Verify image size is a multiple of the given stride in each dimension. If the image size is not a multiple of the
     stride, update it to the nearest multiple of the stride that is greater than or equal to the given floor value.
